@@ -73,13 +73,22 @@
 
 /* Área da imagem */
 .preview {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 220px;
+  overflow: hidden;
   border-radius: 6px;
   background: var(--soft);
   color: var(--muted);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: inherit;
 }
 
 /* Botão */
@@ -97,6 +106,11 @@
 
 .btn:hover {
   background: var(--accent-dark);
+}
+
+.btn:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .btn:focus-visible {
@@ -125,11 +139,17 @@
 .checklist li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-left: 6px solid var(--line);
   border-radius: 6px;
+}
+
+.checklist code {
+  padding: 0;
+  background: transparent;
 }
 
 .status {
@@ -140,6 +160,64 @@
 .video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: inherit;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.capture {
+  display: none;
+}
+
+.camera-status {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fff0ed;
+  color: #a83222;
+}
+
+.detections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detections li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: #fff7ed;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.detections li > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detections small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 400;
 }
