@@ -21,6 +21,7 @@ type Detection = {
 
 const API_URL = 'http://localhost:8000'
 const WS_URL = API_URL.replace(/^http/, 'ws') + '/ws/detect'
+const MAX_CAPTURE_WIDTH = 640
 
 function removeDuplicateDetections(detections: Detection[]) {
   const uniqueDetections = new Map<string, Detection>()
@@ -43,6 +44,7 @@ function App() {
   const captureCanvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const websocketRef = useRef<WebSocket | null>(null)
+  const captureSizeRef = useRef({ width: 0, height: 0 })
   const [cameraAtiva, setCameraAtiva] = useState(false)
   const [erroCamera, setErroCamera] = useState<string | null>(null)
   const [imagem, setImagem] = useState<File | null>(null)
@@ -63,6 +65,11 @@ function App() {
     const video = videoRef.current
     if (!canvas || !video || !cameraAtiva || !video.videoWidth) return
 
+    const sourceWidth = captureSizeRef.current.width || video.videoWidth
+    const sourceHeight = captureSizeRef.current.height || video.videoHeight
+    const scaleX = video.videoWidth / sourceWidth
+    const scaleY = video.videoHeight / sourceHeight
+
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     const context = canvas.getContext('2d')
@@ -76,6 +83,10 @@ function App() {
       .filter((detection) => detection.confidence > MIN_CONFIDENCE)
       .forEach((detection) => {
         const { x1, y1, x2, y2 } = detection.box
+        const scaledX1 = x1 * scaleX
+        const scaledY1 = y1 * scaleY
+        const scaledX2 = x2 * scaleX
+        const scaledY2 = y2 * scaleY
         const label =
           CLASSES.find(({ name }) => name === detection.class_name)?.label ??
           detection.class_name
@@ -83,11 +94,21 @@ function App() {
         const textWidth = context.measureText(text).width
 
         context.strokeStyle = '#f26b0f'
-        context.strokeRect(x1, y1, x2 - x1, y2 - y1)
+        context.strokeRect(
+          scaledX1,
+          scaledY1,
+          scaledX2 - scaledX1,
+          scaledY2 - scaledY1,
+        )
         context.fillStyle = '#f26b0f'
-        context.fillRect(x1, Math.max(0, y1 - 28), textWidth + 12, 28)
+        context.fillRect(
+          scaledX1,
+          Math.max(0, scaledY1 - 28),
+          textWidth + 12,
+          28,
+        )
         context.fillStyle = '#fff'
-        context.fillText(text, x1 + 6, Math.max(20, y1 - 8))
+        context.fillText(text, scaledX1 + 6, Math.max(20, scaledY1 - 8))
       })
   }, [cameraAtiva, visibleDetections])
 
@@ -146,8 +167,13 @@ function App() {
         return
       }
 
-      captureCanvas.width = video.videoWidth
-      captureCanvas.height = video.videoHeight
+      const scale = Math.min(1, MAX_CAPTURE_WIDTH / video.videoWidth)
+      captureCanvas.width = Math.round(video.videoWidth * scale)
+      captureCanvas.height = Math.round(video.videoHeight * scale)
+      captureSizeRef.current = {
+        width: captureCanvas.width,
+        height: captureCanvas.height,
+      }
       const context = captureCanvas.getContext('2d')
       if (!context) return
 
