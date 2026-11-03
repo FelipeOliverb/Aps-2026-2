@@ -1,16 +1,34 @@
+body {
+  background: #0f141b;
+}
+
 .page {
-  --ink: #1b2430;
-  --muted: #5b6573;
-  --line: #d9dde3;
-  --soft: #f3f4f6;
+  --bg: #0f141b;
+  --surface: #171e28;
+  --ink: #f5f7fa;
+  --muted: #cfd6e0;
+  --line: #2b3542;
+  --soft: #1f2833;
   --accent: #f26b0f;
   --accent-dark: #c9540a;
+
+  color-scheme: dark; /* controles nativos (scrollbar, inputs) ficam escuros */
 
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 32px 20px 48px;
   text-align: left;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Garante cor clara nos títulos e textos em destaque, mesmo que outro CSS
+   (index.css, tema padrão do Vite etc.) defina uma cor escura para eles */
+.page h1,
+.page h2,
+.page h3,
+.page strong {
   color: var(--ink);
 }
 
@@ -36,6 +54,7 @@
   padding: 16px;
   border: 1px solid var(--line);
   border-radius: 8px;
+  background: var(--surface);
 }
 
 .card h2 {
@@ -145,11 +164,13 @@
   border: 1px solid var(--line);
   border-left: 6px solid var(--line);
   border-radius: 6px;
+  background: var(--soft);
 }
 
 .checklist code {
   padding: 0;
   background: transparent;
+  color: var(--ink);
 }
 
 .status {
@@ -187,8 +208,8 @@
   margin: 0;
   padding: 10px 12px;
   border-radius: 6px;
-  background: #fff0ed;
-  color: #a83222;
+  background: #3a1a17;
+  color: #ffd0c7;
 }
 
 .detections {
@@ -205,7 +226,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  background: #fff7ed;
+  background: #3a2414;
   border-radius: 6px;
   font-weight: 600;
 }
